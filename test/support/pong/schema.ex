@@ -8,10 +8,31 @@ defmodule Pong.Schema do
     %{name: "Blue Betty", quality: 9}
   ]
 
+  @players [
+    %{name: "Star Lord", key: "SL", favorite_paddle: Enum.at(@paddles, 0)},
+    %{name: "Code Cowboy", key: "🤠", favorite_paddle: Enum.at(@paddles, 2)},
+    %{name: "Obi Wan", key: "OW", favorite_paddle: Enum.at(@paddles, 3)}
+  ]
+
   query do
     field :paddles, list_of(:paddle) do
       resolve(fn _, _, _ ->
         {:ok, @paddles}
+      end)
+    end
+
+    field :players, list_of(:player) do
+      resolve(fn _, _, _ ->
+        {:ok, @players}
+      end)
+    end
+
+    field :player, :player do
+      arg(:key, non_null(:string))
+
+      resolve(fn _, %{key: key}, _ ->
+        player = Enum.find(@players, fn candidate -> candidate.key == key end)
+        {:ok, player}
       end)
     end
   end
@@ -19,5 +40,11 @@ defmodule Pong.Schema do
   object :paddle do
     field(:name, :string)
     field(:quality, :integer)
+  end
+
+  object :player do
+    field(:name, :string)
+    field(:key, :string)
+    field(:favorite_paddle, :paddle)
   end
 end
