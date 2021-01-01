@@ -26,5 +26,43 @@ defmodule Absinthe.ProxyTest do
                }
              }
     end
+
+    test "produce server is up" do
+      {:ok, %{status_code: 200, body: body}} =
+        HTTPoison.post(
+          "http://localhost:9002/graphql",
+          Jason.encode!(%{
+            "query" => """
+              query {
+                produce(name: "banana") {
+                  name
+                  color
+                  __typename
+                  ... on Fruit {
+                    sweetness
+                  }
+                  ... on Vegetable {
+                    primaryVitamin
+                  }
+                }
+              }
+            """
+          }),
+          [{"Content-Type", "application/json"}, {"Accept", "application/graphql"}]
+        )
+
+      response = Jason.decode!(body)
+
+      assert response == %{
+               "data" => %{
+                 "produce" => %{
+                   "__typename" => "Fruit",
+                   "name" => "banana",
+                   "color" => "YELLOW",
+                   "sweetness" => 4
+                 }
+               }
+             }
+    end
   end
 end
