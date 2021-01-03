@@ -1,6 +1,5 @@
 defmodule Absinthe.ProxyTest do
   use ExUnit.Case
-  doctest Absinthe.Proxy
 
   describe "sub-apps are started automatically" do
     test "pong server is up" do

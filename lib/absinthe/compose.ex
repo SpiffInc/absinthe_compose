@@ -1,4 +1,4 @@
-defmodule Absinthe.Proxy do
+defmodule Absinthe.Compose do
   def resolve(_parent, _args, resolution) do
     %{
       schema: schema,
@@ -9,16 +9,16 @@ defmodule Absinthe.Proxy do
     } = resolution
 
     proxy_to = get_in(private, [:meta, :proxy_to])
-    {query, variables} = Absinthe.Proxy.QueryGenerator.render(resolution)
+    {query, variables} = Absinthe.Compose.QueryGenerator.render(resolution)
 
     with {:ok, results} <- proxy(proxy_to, query, variables) do
-      value = Absinthe.Proxy.Downstream.translate(schema, type, name, results)
+      value = Absinthe.Compose.Downstream.translate(schema, type, name, results)
       {:ok, value}
     end
   end
 
   def proxy(url, query, variables) when is_binary(url) do
-    Absinthe.Proxy.HTTPClient.resolve(%{url: url}, query, variables)
+    Absinthe.Compose.HTTPClient.resolve(%{url: url}, query, variables)
   end
 
   def proxy(proxy_to, query, variable) when is_atom(proxy_to) do

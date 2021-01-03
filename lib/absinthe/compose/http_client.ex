@@ -1,4 +1,4 @@
-defmodule Absinthe.Proxy.HTTPClient do
+defmodule Absinthe.Compose.HTTPClient do
   require Logger
 
   def resolve(%{url: url} = config, query, variables) do

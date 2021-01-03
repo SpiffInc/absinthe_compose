@@ -1,4 +1,4 @@
-defmodule Absinthe.Proxy.BasicProxyTest do
+defmodule Absinthe.Compose.BasicProxyTest do
   use ExUnit.Case, async: true
 
   defmodule Schema do
@@ -7,7 +7,7 @@ defmodule Absinthe.Proxy.BasicProxyTest do
     query do
       field :paddles, list_of(:paddle) do
         meta(proxy_to: "http://localhost:9001/api/graphql")
-        resolve(&Absinthe.Proxy.resolve/3)
+        resolve(&Absinthe.Compose.resolve/3)
       end
     end
 

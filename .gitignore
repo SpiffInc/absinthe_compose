@@ -20,7 +20,7 @@ erl_crash.dump
 *.ez
 
 # Ignore package tarball (built via "mix hex.build").
-absinthe_proxy-*.tar
+absinthe_compose-*.tar
 
 
 # Temporary files for e.g. tests

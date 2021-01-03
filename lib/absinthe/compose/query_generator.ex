@@ -1,4 +1,4 @@
-defmodule Absinthe.Proxy.QueryGenerator do
+defmodule Absinthe.Compose.QueryGenerator do
   @moduledoc """
   Takes an Absinthe resolution struct and generates the relevant GraphQL query and variables.
   """

@@ -1,4 +1,4 @@
-defmodule Absinthe.Proxy.Downstream do
+defmodule Absinthe.Compose.Downstream do
   @moduledoc """
   Translates the raw results we get from downstream schemas to a format that our schema can traverse
   """

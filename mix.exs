@@ -1,9 +1,9 @@
-defmodule AbsintheProxy.MixProject do
+defmodule AbsintheCompose.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :absinthe_proxy,
+      app: :absinthe_compose,
       version: "0.1.0",
       elixir: "~> 1.11",
       elixirc_paths: elixirc_paths(Mix.env()),
