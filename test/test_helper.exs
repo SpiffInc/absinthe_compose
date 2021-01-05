@@ -2,6 +2,22 @@ ExUnit.start()
 
 Logger.configure(level: :info)
 
+defmodule Downstream do
+  defmacro pong do
+    [
+      from: Absinthe.Compose.HTTPClient,
+      opts: [url: "http://localhost:9001/api/graphql"]
+    ]
+  end
+
+  defmacro produce do
+    [
+      from: Absinthe.Compose.HTTPClient,
+      opts: [url: "http://localhost:9002/graphql"]
+    ]
+  end
+end
+
 {:ok, _pid} =
   Supervisor.start_link(
     [

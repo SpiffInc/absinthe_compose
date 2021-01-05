@@ -8,26 +8,20 @@ defmodule Absinthe.Compose do
       }
     } = resolution
 
-    proxy_to = get_in(private, [:meta, :proxy_to])
+    compose = get_in(private, [:meta, :compose])
+    compose_module = Keyword.fetch!(compose, :from)
+    opts = Keyword.get(compose, :opts, [])
+
     {query, variables} = Absinthe.Compose.QueryGenerator.render(resolution)
 
-    with {:ok, results} <- proxy(proxy_to, query, variables) do
+    with {:ok, results} <- proxy(compose_module, opts, query, variables) do
       value = Absinthe.Compose.Downstream.translate(schema, type, name, results)
       {:ok, value}
     end
   end
 
-  def proxy(url, query, variables) when is_binary(url) do
-    Absinthe.Compose.HTTPClient.resolve(%{url: url}, query, variables)
-  end
-
-  def proxy(proxy_to, query, variable) when is_atom(proxy_to) do
-    apply(proxy_to, :resolve, [query, variable])
-  end
-
-  def proxy(proxy_to, _query, _variable) do
-    require Logger
-    Logger.error("Cannot proxy graphql query to #{inspect(proxy_to)}")
-    {:error, "Cannot resolve"}
+  def proxy(module, opts, query, variable) when is_atom(module) do
+    prepared = apply(module, :init, [opts])
+    apply(module, :resolve, [prepared, query, variable])
   end
 end

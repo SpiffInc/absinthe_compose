@@ -1,12 +1,14 @@
-defmodule Absinthe.Compose.BasicProxyTest do
+defmodule Absinthe.Proxy.BasicProxyTest do
   use ExUnit.Case, async: true
 
   defmodule Schema do
     use Absinthe.Schema
+    require Downstream
 
     query do
       field :paddles, list_of(:paddle) do
-        meta(proxy_to: "http://localhost:9001/api/graphql")
+        meta(compose: Downstream.pong())
+
         resolve(&Absinthe.Compose.resolve/3)
       end
     end

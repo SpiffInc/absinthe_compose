@@ -1,12 +1,16 @@
 defmodule Absinthe.Compose.HTTPClient do
   require Logger
 
-  def resolve(%{url: url} = config, query, variables) do
+  def init(opts), do: opts
+
+  def resolve(opts, query, variables) do
+    url = Keyword.fetch!(opts, :url)
+
     headers =
       [
         {"Content-Type", "application/json"},
         {"Accept", "application/graphql"}
-      ] ++ Map.get(config, :headers, [])
+      ] ++ Keyword.get(opts, :headers, [])
 
     body =
       Jason.encode!(%{
