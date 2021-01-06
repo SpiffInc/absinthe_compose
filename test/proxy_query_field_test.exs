@@ -1,4 +1,4 @@
-defmodule Absinthe.Proxy.BasicProxyTest do
+defmodule Absinthe.Compose.ProxyQueryFieldTest do
   use ExUnit.Case, async: true
 
   defmodule Schema do
@@ -19,7 +19,7 @@ defmodule Absinthe.Proxy.BasicProxyTest do
     end
   end
 
-  test "test basic proxying by type" do
+  test "proxy a query to a downstream app" do
     query = """
     query {
       paddles {

@@ -37,6 +37,22 @@ defmodule Pong.Schema do
     end
   end
 
+  mutation do
+    field :create_paddle, :paddle do
+      arg(:name, non_null(:string))
+      arg(:quality, :integer)
+
+      resolve(fn _source, %{name: name} = args, _resolution ->
+        paddle = %{
+          name: name,
+          quality: Map.get(args, :quality)
+        }
+
+        {:ok, paddle}
+      end)
+    end
+  end
+
   object :paddle do
     field(:name, :string)
     field(:quality, :integer)

@@ -8,6 +8,11 @@ defmodule Absinthe.Compose.Downstream do
     translate(schema, type, downstream)
   end
 
+  def translate(schema, type_id, downstream) when is_atom(type_id) do
+    type = Absinthe.Schema.lookup_type(schema, type_id)
+    translate(schema, type, downstream)
+  end
+
   def translate(schema, %Absinthe.Type.List{of_type: sub_type_id}, downstream) do
     sub_type = Absinthe.Schema.lookup_type(schema, sub_type_id)
 
