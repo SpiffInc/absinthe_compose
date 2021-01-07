@@ -1,9 +1,7 @@
 defmodule Absinthe.Compose.HTTPClient do
   require Logger
 
-  def init(opts), do: opts
-
-  def resolve(opts, query, variables) do
+  def resolve(query, variables, opts, _resolution) do
     url = Keyword.fetch!(opts, :url)
 
     headers =

@@ -8,7 +8,12 @@ defmodule Absinthe.Compose.ProxyQueryFieldTest do
     query do
       field :paddles, list_of(:paddle) do
         meta(compose: Downstream.pong())
+        resolve(&Absinthe.Compose.resolve/3)
+      end
 
+      field :player, :player do
+        arg(:key, non_null(:string))
+        meta(compose: Downstream.pong())
         resolve(&Absinthe.Compose.resolve/3)
       end
     end
@@ -17,19 +22,38 @@ defmodule Absinthe.Compose.ProxyQueryFieldTest do
       field(:name, :string)
       field(:quality, :integer)
     end
+
+    object :player do
+      field(:name, :string)
+      field(:key, :string)
+      field(:favorite_paddle, :paddle)
+    end
   end
 
-  test "proxy a query to a downstream app" do
-    query = """
-    query {
-      paddles {
+  @paddles_query """
+  query {
+    paddles {
+      name
+      quality
+    }
+  }
+  """
+
+  @player_query """
+  query($key: String!) {
+    player(key: $key) {
+      key
+      name
+      favoritePaddle {
         name
         quality
       }
     }
-    """
+  }
+  """
 
-    assert {:ok, %{data: data}} = Absinthe.run(query, Schema)
+  test "proxy a query to a downstream app" do
+    assert {:ok, %{data: data}} = Absinthe.run(@paddles_query, Schema)
 
     assert data == %{
              "paddles" => [
@@ -39,5 +63,28 @@ defmodule Absinthe.Compose.ProxyQueryFieldTest do
                %{"name" => "Blue Betty", "quality" => 9}
              ]
            }
+  end
+
+  test "querying nested data from downstream" do
+    variables = %{"key" => "SL"}
+    assert {:ok, %{data: data}} = Absinthe.run(@player_query, Schema, variables: variables)
+
+    assert data == %{
+             "player" => %{
+               "key" => "SL",
+               "name" => "Star Lord",
+               "favoritePaddle" => %{
+                 "name" => "Big Red",
+                 "quality" => 4
+               }
+             }
+           }
+  end
+
+  test "queries that return null for an object" do
+    variables = %{"key" => "WAT"}
+    assert {:ok, %{data: data}} = Absinthe.run(@player_query, Schema, variables: variables)
+
+    assert data == %{"player" => nil}
   end
 end
