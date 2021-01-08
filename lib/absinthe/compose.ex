@@ -3,8 +3,8 @@ defmodule Absinthe.Compose do
     %{
       schema: schema,
       definition: %{
-        name: name,
-        schema_node: %{__private__: private, type: type}
+        schema_node: %{__private__: private},
+        name: name
       }
     } = resolution
 
@@ -14,14 +14,14 @@ defmodule Absinthe.Compose do
 
     {query, variables} = Absinthe.Compose.QueryGenerator.render(resolution)
 
-    with {:ok, results} <- proxy(compose_module, opts, query, variables) do
-      value = Absinthe.Compose.Downstream.translate(schema, type, name, results)
+    with {:ok, downstream} <- proxy(compose_module, query, variables, opts, resolution) do
+      downstream = Map.get(downstream, name)
+      value = Absinthe.Compose.Downstream.translate(downstream, resolution.definition, schema)
       {:ok, value}
     end
   end
 
-  def proxy(module, opts, query, variable) when is_atom(module) do
-    prepared = apply(module, :init, [opts])
-    apply(module, :resolve, [prepared, query, variable])
+  def proxy(module, query, variables, opts, resolution) when is_atom(module) do
+    apply(module, :resolve, [query, variables, opts, resolution])
   end
 end

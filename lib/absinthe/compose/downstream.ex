@@ -3,39 +3,42 @@ defmodule Absinthe.Compose.Downstream do
   Translates the raw results we get from downstream schemas to a format that our schema can traverse
   """
 
-  def translate(schema, type, name, downstream) do
-    downstream = Map.get(downstream, name)
-    translate(schema, type, downstream)
+  alias Absinthe.Blueprint.Document.Field
+
+  def translate(nil, _field, _schema), do: nil
+
+  def translate(downstream, %Field{schema_node: %{type: %Absinthe.Type.List{}}} = field, schema) do
+    translate_list(downstream, field, schema)
   end
 
-  def translate(schema, type_id, downstream) when is_atom(type_id) do
-    type = Absinthe.Schema.lookup_type(schema, type_id)
-    translate(schema, type, downstream)
+  def translate(downstream, %Field{selections: []}, _schema) do
+    downstream
   end
 
-  def translate(schema, %Absinthe.Type.List{of_type: sub_type_id}, downstream) do
-    sub_type = Absinthe.Schema.lookup_type(schema, sub_type_id)
+  def translate(downstream, %Field{} = field, schema) do
+    translate_object(downstream, field, schema)
+  end
 
-    Enum.map(downstream, fn raw ->
-      translate(schema, sub_type, raw)
+  def translate(downstream, tree, _schema) do
+    raise "Not sure how to translate #{inspect(downstream)} to #{inspect(tree)}"
+  end
+
+  def translate_list(downstream, field, schema) do
+    %Absinthe.Type.List{of_type: type_id} = field.schema_node.type
+    of_type = Absinthe.Schema.lookup_type(schema, type_id)
+    sub_schema_node = Map.put(field.schema_node, :type, of_type)
+    item_field = Map.put(field, :schema_node, sub_schema_node)
+    Enum.map(downstream, &translate(&1, item_field, schema))
+  end
+
+  def translate_object(nil, _list, _schema), do: nil
+
+  def translate_object(downstream, field, schema) do
+    Enum.reduce(field.selections, %{}, fn field, map ->
+      internal_name = field.schema_node.identifier
+      raw = Map.get(downstream, field.name)
+      internal_value = translate(raw, field, schema)
+      Map.put(map, internal_name, internal_value)
     end)
-  end
-
-  def translate(schema, %Absinthe.Type.Object{fields: fields}, downstream) do
-    Enum.reduce(fields, %{}, fn {key, field}, map ->
-      if Map.has_key?(downstream, field.name) do
-        raw = Map.get(downstream, field.name)
-        field_type = Absinthe.Schema.lookup_type(schema, field.type)
-        Map.put(map, key, translate(schema, field_type, raw))
-      else
-        map
-      end
-    end)
-  end
-
-  def translate(_schema, %Absinthe.Type.Scalar{}, raw), do: raw
-
-  def translate(_schema, type, downstream) do
-    raise "Not sure how to translate #{inspect(downstream)} to #{inspect(type)}"
   end
 end
