@@ -98,6 +98,7 @@ defmodule Absinthe.Compose.ProxyMutationFieldTest do
       }
     }
     """
+
     vars = %{"name" => "Starfruit", "color" => "YELLOW"}
 
     assert {:ok, %{data: data}} = Absinthe.run(query, Schema, variables: vars)

@@ -12,7 +12,7 @@ defmodule Absinthe.Compose.ProxyQueryFieldTest do
       end
 
       field :player, :player do
-        arg(:key, non_null(:string))
+        arg(:key, non_null(:id))
         meta(compose: Downstream.pong())
         resolve(&Absinthe.Compose.resolve/3)
       end
@@ -34,7 +34,7 @@ defmodule Absinthe.Compose.ProxyQueryFieldTest do
     end
 
     object :player do
-      field(:name, :string)
+      field(:name, non_null(:id))
       field(:key, :string)
       field(:favorite_paddle, :paddle)
     end
@@ -74,7 +74,7 @@ defmodule Absinthe.Compose.ProxyQueryFieldTest do
   """
 
   @player_query """
-  query($key: String!) {
+  query($key: ID!) {
     player(key: $key) {
       key
       name

@@ -49,6 +49,10 @@ defmodule Absinthe.Compose.Downstream do
     downstream
   end
 
+  def translate_scalar(downstream, %Absinthe.Type.Scalar{identifier: :id}) do
+    downstream
+  end
+
   def translate_scalar(downstream, %Absinthe.Type.Scalar{identifier: :integer}) do
     downstream
   end

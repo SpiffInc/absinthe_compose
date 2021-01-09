@@ -49,6 +49,7 @@ defmodule Produce.Schema do
           color: Map.get(args, :color),
           sweetness: Map.get(args, :sweetness)
         }
+
         {:ok, fruit}
       end)
     end
