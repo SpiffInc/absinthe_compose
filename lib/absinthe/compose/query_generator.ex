@@ -81,9 +81,10 @@ defmodule Absinthe.Compose.QueryGenerator do
 
   defp select_variable_arguments(%{
          raw: %Blueprint.Input.RawValue{content: %Blueprint.Input.Variable{name: name}},
+         schema_node: type,
          data: data
        }) do
-    {name, data}
+    {name, translate_scalar(data, type)}
   end
 
   defp select_variable_arguments(%{normalized: %Blueprint.Input.List{items: items}}) do
@@ -97,6 +98,22 @@ defmodule Absinthe.Compose.QueryGenerator do
   defp select_variable_arguments(_argument) do
     nil
   end
+
+  defp translate_scalar(nil, _type), do: nil
+  defp translate_scalar(internal_value, %Absinthe.Type.NonNull{of_type: sub_type}) do
+    translate_scalar(internal_value, sub_type)
+  end
+  defp translate_scalar(internal_value, %Absinthe.Type.Scalar{identifier: :string}), do: internal_value
+  defp translate_scalar(internal_value, %Absinthe.Type.Scalar{identifier: :integer}), do: internal_value
+  defp translate_scalar(internal_value, %Absinthe.Type.Enum{} = enum) do
+    enum.values
+    |> Map.fetch!(internal_value)
+    |> Map.fetch!(:name)
+  end
+  defp translate_scalar(internal_value, type) do
+    raise "Not sure how to translate to proxy #{inspect(internal_value)} to #{inspect(type)}"
+  end
+
 
   @indent_increment 2
   defp build_query(tree, root_operation_node, used_variables, fragments) do
