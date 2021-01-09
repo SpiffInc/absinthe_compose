@@ -37,6 +37,24 @@ defmodule Produce.Schema do
     end
   end
 
+  mutation do
+    field :new_fruit, :fruit do
+      arg(:name, non_null(:string))
+      arg(:color, :produce_color)
+      arg(:sweetness, :integer)
+
+      resolve(fn _, args, _ ->
+        fruit = %{
+          name: Map.get(args, :name),
+          color: Map.get(args, :color),
+          sweetness: Map.get(args, :sweetness)
+        }
+
+        {:ok, fruit}
+      end)
+    end
+  end
+
   enum :produce_color do
     value(:red)
     value(:orange)

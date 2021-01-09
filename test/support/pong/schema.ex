@@ -28,7 +28,7 @@ defmodule Pong.Schema do
     end
 
     field :player, :player do
-      arg(:key, non_null(:string))
+      arg(:key, non_null(:id))
 
       resolve(fn _, %{key: key}, _ ->
         player = Enum.find(@players, fn candidate -> candidate.key == key end)
@@ -59,7 +59,7 @@ defmodule Pong.Schema do
   end
 
   object :player do
-    field(:name, :string)
+    field(:name, non_null(:id))
     field(:key, :string)
     field(:favorite_paddle, :paddle)
   end

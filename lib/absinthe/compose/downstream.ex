@@ -11,8 +11,9 @@ defmodule Absinthe.Compose.Downstream do
     translate_list(downstream, field, schema)
   end
 
-  def translate(downstream, %Field{selections: []}, _schema) do
-    downstream
+  def translate(downstream, %Field{selections: []} = field, schema) do
+    type = Absinthe.Schema.lookup_type(schema, field.schema_node.type)
+    translate_scalar(downstream, type)
   end
 
   def translate(downstream, %Field{} = field, schema) do
@@ -40,5 +41,30 @@ defmodule Absinthe.Compose.Downstream do
       internal_value = translate(raw, field, schema)
       Map.put(map, internal_name, internal_value)
     end)
+  end
+
+  def translate_scalar(nil, _), do: nil
+
+  def translate_scalar(downstream, %Absinthe.Type.Scalar{identifier: :string}) do
+    downstream
+  end
+
+  def translate_scalar(downstream, %Absinthe.Type.Scalar{identifier: :id}) do
+    downstream
+  end
+
+  def translate_scalar(downstream, %Absinthe.Type.Scalar{identifier: :integer}) do
+    downstream
+  end
+
+  def translate_scalar(downstream, %Absinthe.Type.Enum{} = enum) do
+    case Map.get(enum.values_by_name, downstream) do
+      nil -> raise "Invalid Enum value #{inspect(downstream)} for #{enum.name}"
+      %Absinthe.Type.Enum.Value{value: value} -> value
+    end
+  end
+
+  def translate_scalar(downstream, type) do
+    raise "Not sure how to translate #{inspect(downstream)} to #{inspect(type)}"
   end
 end
