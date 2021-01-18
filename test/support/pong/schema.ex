@@ -9,9 +9,9 @@ defmodule Pong.Schema do
   ]
 
   @players [
-    %{name: "Star Lord", key: "SL", favorite_paddle: Enum.at(@paddles, 0)},
-    %{name: "Code Cowboy", key: "🤠", favorite_paddle: Enum.at(@paddles, 2)},
-    %{name: "Obi Wan", key: "OW", favorite_paddle: Enum.at(@paddles, 3)}
+    %{active: true, name: "Star Lord", key: "SL", favorite_paddle: Enum.at(@paddles, 0)},
+    %{active: true, name: "Code Cowboy", key: "🤠", favorite_paddle: Enum.at(@paddles, 2)},
+    %{active: false, name: "Obi Wan", key: "OW", favorite_paddle: Enum.at(@paddles, 3)}
   ]
 
   query do
@@ -59,6 +59,7 @@ defmodule Pong.Schema do
   end
 
   object :player do
+    field(:active, :boolean)
     field(:name, non_null(:id))
     field(:key, :string)
     field(:favorite_paddle, :paddle)
