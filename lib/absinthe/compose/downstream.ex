@@ -57,6 +57,10 @@ defmodule Absinthe.Compose.Downstream do
     downstream
   end
 
+  def translate_scalar(downstream, %Absinthe.Type.Scalar{identifier: :boolean}) do
+    downstream
+  end
+
   def translate_scalar(downstream, %Absinthe.Type.Enum{} = enum) do
     case Map.get(enum.values_by_name, downstream) do
       nil -> raise "Invalid Enum value #{inspect(downstream)} for #{enum.name}"

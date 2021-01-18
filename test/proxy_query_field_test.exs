@@ -36,6 +36,7 @@ defmodule Absinthe.Compose.ProxyQueryFieldTest do
     object :player do
       field(:name, non_null(:id))
       field(:key, :string)
+      field(:active, :boolean)
       field(:favorite_paddle, :paddle)
     end
 
@@ -78,6 +79,7 @@ defmodule Absinthe.Compose.ProxyQueryFieldTest do
     player(key: $key) {
       key
       name
+      active
       favoritePaddle {
         name
         quality
@@ -105,6 +107,7 @@ defmodule Absinthe.Compose.ProxyQueryFieldTest do
 
     assert data == %{
              "player" => %{
+               "active" => true,
                "key" => "SL",
                "name" => "Star Lord",
                "favoritePaddle" => %{
