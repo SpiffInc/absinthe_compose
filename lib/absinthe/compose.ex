@@ -8,10 +8,13 @@ defmodule Absinthe.Compose do
       },
       context: context
     } = resolution
+
     compose = get_in(private, [:meta, :compose])
     compose_module = Keyword.fetch!(compose, :from)
-    opts = Keyword.get(compose, :opts, [])
-    |> forward_hearders(context)
+
+    opts =
+      Keyword.get(compose, :opts, [])
+      |> forward_hearders(context)
 
     {query, variables} = Absinthe.Compose.QueryGenerator.render(resolution)
 

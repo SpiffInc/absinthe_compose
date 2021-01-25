@@ -18,11 +18,11 @@ defmodule Absinthe.Compose.Plug.ForwardHeader do
   defp get_headers(conn, header_names) do
     Enum.reduce(header_names, [], fn name, acc ->
       name = String.downcase(name)
+
       case get_req_header(conn, name) do
         [] -> acc
         values -> [{name, values} | acc]
       end
     end)
   end
-
 end

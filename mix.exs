@@ -45,7 +45,7 @@ defmodule AbsintheCompose.MixProject do
       """,
       links: %{
         github: "https://github.com/SpiffInc/absinthe_compose"
-      },
+      }
     ]
   end
 end
