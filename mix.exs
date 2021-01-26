@@ -29,7 +29,7 @@ defmodule AbsintheCompose.MixProject do
       {:absinthe_plug, "~> 1.5", only: [:dev, :test]},
       {:ex_doc, "~> 0.18", only: :dev, runtime: false},
       {:jason, "~> 1.0", only: [:dev, :test]},
-      {:plug_cowboy, "~> 2.0", only: [:dev, :test]}
+      {:plug_cowboy, "~> 2.0"}
     ]
   end
 
@@ -45,7 +45,7 @@ defmodule AbsintheCompose.MixProject do
       """,
       links: %{
         github: "https://github.com/SpiffInc/absinthe_compose"
-      },
+      }
     ]
   end
 end
